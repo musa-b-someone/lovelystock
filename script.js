@@ -1,22 +1,22 @@
 let images = [];
 let currentPage = 1;
-const imagesPerPage = 100;
+const imagesPerPage = 50;
 
 // Load CSV file dynamically
 async function loadCSV() {
     const response = await fetch("images.csv");
     const text = await response.text();
     images = parseCSV(text);
-    showRandomImages(); // Load random images on home page
+    showRandomImages();
 }
 
 // Parse CSV data into an array (handles ANY format)
 function parseCSV(data) {
-    let rows = data.split("\n").map(row => row.trim()).filter(row => row.length > 0); // Remove empty lines
+    let rows = data.split("\n").map(row => row.trim()).filter(row => row.length > 0);
     let result = [];
 
-    for (let i = 1; i < rows.length; i++) {  // Skip header row
-        let row = smartSplit(rows[i]); // Use the smart splitting function
+    for (let i = 1; i < rows.length; i++) {
+        let row = smartSplit(rows[i]);
         if (row.length >= 2) {
             result.push({ url: row[0].trim(), title: row.slice(1).join(", ").trim() });
         }
@@ -33,7 +33,7 @@ function smartSplit(row) {
 
     for (let char of row) {
         if (char === '"' && (current.length === 0 || current[current.length - 1] !== "\\")) {
-            inQuotes = !inQuotes; // Toggle quote state
+            inQuotes = !inQuotes;
         } else if (char === "," && !inQuotes) {
             output.push(current.trim());
             current = "";
@@ -45,10 +45,23 @@ function smartSplit(row) {
     return output;
 }
 
-// Show random 100 images on homepage
+// Show random images with a love theme
 function showRandomImages() {
-    let shuffled = [...images].sort(() => 0.5 - Math.random());
-    showImages(shuffled.slice(0, imagesPerPage));
+    const loveKeywords = ['love', 'romance', 'valentines', 'heart', 'couple', 'kiss', 'wedding', 'flowers', 'affection', 'passion', 'date', 'relationship'];
+    let loveImages = images.filter(img => {
+        const titleLower = img.title.toLowerCase();
+        return loveKeywords.some(keyword => titleLower.includes(keyword));
+    });
+
+    if (loveImages.length < imagesPerPage) {
+        let remaining = imagesPerPage - loveImages.length;
+        let otherImages = images.filter(img => !loveImages.includes(img));
+        let shuffled = [...otherImages].sort(() => 0.5 - Math.random());
+        loveImages = loveImages.concat(shuffled.slice(0, remaining));
+    }
+
+    let shuffledLoveImages = [...loveImages].sort(() => 0.5 - Math.random());
+    showImages(shuffledLoveImages.slice(0, imagesPerPage));
 }
 
 // Search images by title (case insensitive)
@@ -67,15 +80,11 @@ function showImages(imageList) {
     let start = (currentPage - 1) * imagesPerPage;
     let paginatedImages = imageList.slice(start, start + imagesPerPage);
 
-    // Clear gallery
     gallery.innerHTML = "";
     paginatedImages.forEach(img => {
         let div = document.createElement("div");
         div.className = "image-card";
-        div.innerHTML = `<a href="${img.url}" target="_blank">
-                            <img src="${img.url}" loading="lazy" alt="${img.title}">
-                         </a>
-                         <p>${truncateText(img.title, 100)}</p>`;
+        div.innerHTML = `<img src="${img.url}" loading="lazy" alt="${img.title}" onclick="openPopup('${img.url}', '${img.title}')">`;
         gallery.appendChild(div);
     });
 
@@ -92,11 +101,33 @@ function showImages(imageList) {
         };
         pagination.appendChild(btn);
     }
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
 }
 
-// Truncate long descriptions
-function truncateText(text, maxLength) {
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+// Open the image popup
+function openPopup(imageUrl, title) {
+    let popup = document.getElementById("imagePopup");
+    let popupImage = document.getElementById("popupImage");
+    let popupTitle = document.getElementById("popupTitle");
+    let popupDownload = document.getElementById("popupDownload");
+
+    popupImage.src = imageUrl;
+    popupTitle.innerText = title;
+    popupDownload.href = imageUrl; // Set the download link
+
+    popup.style.display = "flex"; // Show the popup
+    document.body.style.overflow = 'hidden'; // Disable scrolling on the body
+}
+
+// Close the image popup
+function closePopup() {
+    let popup = document.getElementById("imagePopup");
+    popup.style.display = "none"; // Hide the popup
+    document.body.style.overflow = 'auto'; // Re-enable scrolling on the body
 }
 
 // Load images on page load
