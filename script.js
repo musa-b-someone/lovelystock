@@ -1,43 +1,40 @@
 let images = [];
 let currentPage = 1;
 const imagesPerPage = 100;
-
 let currentImageList = [];
-let baseCardWidth = 250;  // Base width for calculations (adjust as needed)
+let baseCardWidth = 250;  // Target width for calculations
 
 // Load CSV file and initialize the page
 async function loadCSV() {
     try {
+        showLoadingIndicator();
         const response = await fetch("images.csv");
         const text = await response.text();
         images = parseCSV(text);
-        showRandomImages();
+        await showRandomImages(); // Await to ensure images are loaded
+        hideLoadingIndicator();
     } catch (error) {
         console.error("Error loading CSV:", error);
         displayErrorMessage("Error loading image data. Please try again later.");
-        document.body.classList.remove('loading'); // End loading state on error
+        hideLoadingIndicator(); // Hide in case of error too.
     }
 }
 
-// Display a loading Indicator
 function showLoadingIndicator() {
-  document.getElementById('loadingIndicator').style.display = 'block';
+    document.getElementById("loadingIndicator").style.display = "block";
 }
 
-// Hide the loading Indicator
 function hideLoadingIndicator() {
-  document.getElementById('loadingIndicator').style.display = 'none';
+    document.getElementById("loadingIndicator").style.display = "none";
 }
 
 function displayErrorMessage(message) {
     const gallery = document.getElementById("imageGallery");
     gallery.innerHTML = `<p class="error-message">${message}</p>`;
-    hideLoadingIndicator();
 }
 
-// Parse CSV data (handles quoted fields and commas within titles)
 function parseCSV(data) {
-    let rows = data.split('\n');
+  let rows = data.split('\n');
     rows = rows.map(row => row.trim()).filter(row => row.length > 0);
     const result = [];
 
@@ -50,9 +47,8 @@ function parseCSV(data) {
     return result;
 }
 
-// Smartly split CSV rows, handling commas within quoted fields
 function smartSplit(row) {
-    const items = [];
+  const items = [];
     let currentItem = '';
     let inQuotes = false;
 
@@ -71,7 +67,6 @@ function smartSplit(row) {
 }
 
 
-// Show random love-themed images on the home page
 async function showRandomImages() {
     const loveKeywords = ['love', 'romance', 'valentines', 'heart', 'couple', 'kiss', 'wedding', 'flowers', 'affection', 'passion', 'date', 'relationship'];
     let loveImages = images.filter(img => {
@@ -79,7 +74,6 @@ async function showRandomImages() {
         return loveKeywords.some(keyword => titleLower.includes(keyword));
     });
 
-    // Supplement with random images if not enough love-themed images
     if (loveImages.length < imagesPerPage) {
         let remaining = imagesPerPage - loveImages.length;
         let otherImages = images.filter(img => !loveImages.includes(img));
@@ -90,114 +84,105 @@ async function showRandomImages() {
     currentImageList = [...loveImages].sort(() => 0.5 - Math.random());
     currentPage = 1;
 
-    // Hide pagination on the home page
     document.getElementById('pagination').style.display = 'none';
+    document.getElementById('imageGallery').innerHTML = "";
 
-    const imageGallery = document.getElementById('imageGallery');
-    imageGallery.innerHTML = ""; // Clear the gallery before adding images
+    await showImages(currentImageList, true); // Await to display images
 
-    // Show the loading Indicator
-    showLoadingIndicator();
-    await showImages(currentImageList, true);
-
-
-    hideLoadingIndicator(); // Hide after images are loaded
+     // Add the message below images
+    const imageGallery = document.getElementById("imageGallery")
+    const homePageMessage = document.createElement('p');
+    homePageMessage.textContent = '100 random images from our collection to showcase that everything in our collection is unique.';
+    homePageMessage.classList.add('home-page-message');
+    imageGallery.parentNode.insertBefore(homePageMessage, imageGallery.nextSibling);
 }
 
-// Search images by title (case-insensitive)
 async function searchImages() {
     let query = document.getElementById("searchBox").value.toLowerCase();
     let filteredImages = images.filter(img => img.title.toLowerCase().includes(query));
     currentImageList = filteredImages;
     currentPage = 1;
 
-    // Show pagination on search results page
     document.getElementById('pagination').style.display = 'flex';
 
-    // Remove home page message if it exists
     const homePageMessage = document.querySelector('.home-page-message');
     if (homePageMessage) {
         homePageMessage.remove();
     }
 
-    // Show the loading Indicator
-    showLoadingIndicator();
-    await showImages(currentImageList);
-
-    hideLoadingIndicator(); // Hide after images are loaded
+    document.getElementById('imageGallery').innerHTML = "";
+    await showImages(currentImageList); // Await to display images
 }
 
-// Handle Enter key press in the search box
 function handleSearchKeyPress(event) {
     if (event.key === "Enter") {
         searchImages();
     }
 }
 
-
-// Go to the home page (show random images)
 function goToHomePage() {
-    document.getElementById('searchBox').value = '';  // Clear the search box
+    document.getElementById('searchBox').value = '';
     showRandomImages();
 }
 
-
-// Display images with optional home page message
+// New showImages function using Promises and async/await
 async function showImages(imageList, isHomePage = false) {
-  return new Promise((resolve) => {
     const gallery = document.getElementById("imageGallery");
-    gallery.innerHTML = "";
-    let loadedCount = 0;
-    const totalImages = imageList.length;
-
+    const galleryWidth = gallery.offsetWidth; // Get the actual gallery width
 
     if (imageList.length === 0) {
         displayErrorMessage("No images found.");
         return;
     }
-
     const imageLoadPromises = imageList.map(img => {
-        return new Promise((resolveImage) => {
-            const div = document.createElement("div");
-            div.className = "image-card";
+        return new Promise((resolve) => {
+        const div = document.createElement("div");
+        div.className = "image-card";
+        const imgElement = new Image(); // Create a new Image object
+        imgElement.src = img.url;
+        imgElement.loading = 'lazy';
+        imgElement.alt = img.title;
+        imgElement.onclick = () => openPopup(img.url, img.title.replace(/'/g, "\\'"));
 
-            const imgElement = document.createElement('img');
-            imgElement.src = img.url;
-            imgElement.loading = 'lazy';
-            imgElement.alt = img.title;
+        imgElement.onload = () => {
+            const aspectRatio = imgElement.naturalWidth / imgElement.naturalHeight;
+            let cardWidth = baseCardWidth;
+            let cardHeight = cardWidth / aspectRatio;
 
-            imgElement.onload = function() {
-                const aspectRatio = this.naturalWidth / this.naturalHeight;
-                this.style.width = '100%';
-                div.style.flexBasis = `${baseCardWidth * aspectRatio}px`;
-                imgElement.onclick = () => openPopup(img.url, img.title.replace(/'/g, "\\'"));
+            // Adjust card width based on gallery width
+            const numPerRow = Math.floor(galleryWidth / cardWidth);
+            const availableWidth = galleryWidth - (numPerRow -1) * 10; // Account for gap
+            cardWidth = availableWidth / numPerRow;
+            cardHeight = cardWidth / aspectRatio;
 
-                div.appendChild(imgElement);
-                gallery.appendChild(div);
-                resolveImage(); // Resolve the promise for this image
-            };
+            div.style.width = `${cardWidth}px`; // Set width
+            div.style.height = `${cardHeight}px`;  //Set height
+            imgElement.style.width = '100%';
+            imgElement.style.height = '100%';
 
-            imgElement.onerror = function() {
-                console.warn("Error loading image:", img.url);
-                resolveImage(); // Resolve the promise even if there's an error
-            };
-        });
+            div.appendChild(imgElement);
+            gallery.appendChild(div);
+
+            resolve(); // Resolve the promise once the image is loaded
+        };
+
+        imgElement.onerror = () => {
+          console.error(`Error loading image: ${img.url}`);
+          resolve(); // Resolve even if there's an error.
+        }
     });
 
+});
 
-        Promise.all(imageLoadPromises).then(() => {
-            if (!isHomePage) {
-                updatePagination(imageList);
-                document.getElementById('pagination').style.display = 'flex';
-            }
-            document.body.classList.remove('loading');  // Remove the loading class from the body
-            resolve();
-        });
-    });
+await Promise.all(imageLoadPromises);
+
+
+    // Only show pagination if not home page
+    if(!isHomePage) {
+        updatePagination(imageList);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-
-
 
 // Open the image popup
 function openPopup(imageUrl, title) {
@@ -228,8 +213,6 @@ function closePopup() {
     document.body.style.overflow = 'auto';
     popup.onclick = null;
 }
-
-
 
 function updatePagination(imageList) {
     const pagination = document.getElementById("pagination");
@@ -276,8 +259,5 @@ function handlePageJumpKeyPress(event, totalPages) {
     }
 }
 
-
 // Load images when the page is loaded
 window.onload = loadCSV;
-
-
