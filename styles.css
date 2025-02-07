@@ -1,161 +1,257 @@
-/* BEAUTIFULLY BRUTAL. Prepare to be astonished. */
+/* DESIGN EVOLVED OVER INFINITE EONS */
+
+:root {
+    /* Cosmic Color Palette - Shifting Nebula Hues */
+    --primary-color: #6A0DAD;  /* Amethyst, base of all */
+    --secondary-color: #C71585; /* Deep Pink, pulsing life */
+    --accent-color: #FFD700;  /* Gold, the spark of creation */
+    --shadow-color: rgba(0, 0, 0, 0.3); /* Gravity's embrace */
+    --text-color: #eee; /* Starlight on the void */
+    --background-gradient: linear-gradient(to bottom, #000046, #1cb5e0); /* Oceanus */
+}
 
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif; /* A clean, modern base. */
-    text-align: center; /* Centered, but not in a boring way. */
+    font-family: 'Exo 2', sans-serif; /* Typeface forged in astral fire */
+    text-align: center;
     margin: 0;
     padding: 0;
-    background: radial-gradient(circle, #f0f0f0, #e0e0e0); /* Soft gradient for depth. */
-    color: #333; /* Dark, but not oppressive. */
-    overflow-x: hidden; /* Keep it tidy. */
-    /* Add a subtle, organic texture */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cdefs%3E%3Cpattern id='grid' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23cccccc' opacity='0.1' /%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%' height='100%' fill='url(%23grid)' /%3E%3C/svg%3E");
+    background: var(--background-gradient); /* Primordial soup */
+    color: var(--text-color);
+    overflow-x: hidden;
+    display: flex;              /* Aligned by celestial mechanics */
+    flex-direction: column;
+    min-height: 100vh;         /* Reaching for the infinite */
 }
 
 header {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); /* Dramatic overlay. */
-    color: white;
-    padding: 40px 20px;
+    background: rgba(0, 0, 0, 0.5);  /* Ethereal veil */
+    color: var(--text-color);
+    padding: 30px 20px;
     margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* For a surreal glow. */
-    clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%); /* Angled cut-off for visual intrigue. */
+    text-shadow: 0 0 20px var(--accent-color);  /* Auras of power */
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); /* Angles carved by eons */
+    position: relative;         /* Anchor for cosmic effects */
+    overflow: hidden;           /* Contain the chaos */
+}
+
+/* Particle Generator (Cosmic Dust) */
+header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="1" fill="white"/></svg>');
+    opacity: 0.3;
+    animation: floatParticles 10s linear infinite; /* Drifting through time */
+}
+
+@keyframes floatParticles {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50%, 50%); }
 }
 
 h1 {
-    font-size: 3em;
-    font-weight: 700; /* Bold and confident. */
-    letter-spacing: 0.1em; /* A touch of extravagance. */
+    font-size: 4em;
+    font-weight: 900; /* Gravity-defying boldness */
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    animation: pulse 3s infinite alternate; /* Gentle, mesmerizing animation. */
+    animation: rotateColors 7s infinite linear, fadeIn 3s ease-in-out;  /* Colors of creation */
+    display: inline-block;   /* Isolate from the void */
+    position: relative; /* For text glow */
+    z-index: 1;          /* Above the cosmic dust */
 }
 
-@keyframes pulse {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(1.05); /* Subtle growth for visual interest. */
-    }
+h1::before, h1::after {
+    content: attr(data-text); /* Duplicate text for glowing effect */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: flicker 5s infinite alternate; /* Embers of time */
+}
+
+h1::before {
+    text-shadow: -2px 0 var(--accent-color);
+    clip: rect(0, auto, auto, 0);
+}
+
+h1::after {
+    text-shadow: 2px 0 var(--primary-color);
+    clip: rect(0, 0, auto, auto);
+}
+
+@keyframes rotateColors {
+    0% { color: var(--primary-color); }
+    33% { color: var(--secondary-color); }
+    66% { color: var(--accent-color); }
+    100% { color: var(--primary-color); }
+}
+
+@keyframes flicker {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.9; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 input {
-    padding: 15px;
-    width: 60%;
-    border: none; /* Ditch the conventional border. */
-    background: rgba(255, 255, 255, 0.7); /* Translucent input field. */
-    color: #333;
-    font-size: 1.2em;
-    border-radius: 10px; /* Soften the edges slightly. */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle depth. */
-    transition: all 0.3s ease; /* Smooth transition for hover effect. */
-    outline: none; /* Remove the default outline. */
+    padding: 18px;
+    width: 70%;
+    border: none;
+    background: rgba(255, 255, 255, 0.1); /* Translucent shell */
+    color: var(--text-color);
+    font-size: 1.3em;
+    border-radius: 40px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth transition */
+    outline: none;
+    font-family: 'Montserrat', sans-serif; /* Elegant text entry */
 }
 
 input:focus {
-    background: rgba(255, 255, 255, 0.9); /* Slightly brighter on focus. */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced depth. */
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 24px var(--shadow-color);
+    transform: scale(1.03);    /* Subtle expansion of consciousness */
 }
 
 button {
-    padding: 15px 30px;
-    background: #4CAF50; /* A vibrant green. */
-    color: white;
+    padding: 18px 40px;
+    background: linear-gradient(to right, var(--secondary-color), var(--primary-color)); /* Energy flow */
+    color: var(--text-color);
     border: none;
     cursor: pointer;
-    font-size: 1.2em;
-    border-radius: 50px; /* Fully rounded button for a modern look. */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    text-transform: uppercase; /* Make it bold */
-    letter-spacing: 0.05em; /* A slight spread */
+    font-size: 1.3em;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    position: relative;       /* Layered for effects */
+    overflow: hidden;       /* Hide the astral surge */
+}
+
+button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0)); /* Luminescence */
+    transform: translateX(-100%);
+    transition: transform 0.6s ease-in-out;
+}
+
+button:hover::before {
+    transform: translateX(0);  /* Astral surge */
 }
 
 button:hover {
-    background: #388E3C; /* Darker green on hover. */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px); /* Lift the button slightly on hover. */
+    box-shadow: 0 8px 24px var(--shadow-color);
+    transform: translateY(-3px); /* Ascent towards transcendence */
 }
 
 #imageGallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid. */
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 30px;
     justify-content: center;
+    flex: 1;             /* Occupy remaining space */
 }
 
 .image-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Hide overflow for clean look. */
-    transition: transform 0.3s ease;
+    background: rgba(255, 255, 255, 0.08); /* Whispers of form */
+    border-radius: 20px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;  /* Stacking context for details */
 }
 
 .image-card:hover {
-    transform: scale(1.05); /* Subtle zoom effect. */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.04); /* Unveiling hidden dimensions */
+    box-shadow: 0 8px 24px var(--shadow-color);
 }
 
 .image-card img {
     width: 100%;
-    height: 200px; /* Fixed height for consistency. */
-    object-fit: cover; /* Maintain aspect ratio. */
-    transition: filter 0.3s ease; /* Smooth filter transition. */
+    height: 250px;
+    object-fit: cover;
+    filter: grayscale(50%) blur(3px); /* Dreamlike essence */
+    transition: filter 0.5s ease-in-out;
 }
 
-.image-card img:hover {
-    filter: grayscale(80%); /* Fading to grayscale on hover. */
+.image-card:hover img {
+    filter: grayscale(0) blur(0);    /* Clarity revealed */
+}
+
+.image-card .card-details {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); /* Emerging from darkness */
+    color: var(--text-color);
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.image-card:hover .card-details {
+    opacity: 1;                 /* The language of dreams */
 }
 
 #pagination {
-    margin: 20px;
+    margin: 30px;
     text-align: center;
 }
 
 .page-button {
-    padding: 10px 20px;
-    margin: 5px;
+    padding: 14px 30px;
+    margin: 8px;
     cursor: pointer;
-    border: 2px solid #4CAF50; /* Match the button color. */
-    color: #4CAF50;
-    background: transparent; /* Transparent background. */
-    border-radius: 50px; /* Fully rounded. */
-    transition: all 0.3s ease;
-    font-weight: 600; /* boldness */
+    border: 2px solid var(--primary-color);
+    color: var(--text-color);
+    background: transparent;
+    border-radius: 50px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .page-button:hover {
-    background: #4CAF50; /* Green on hover. */
-    color: white;
+    background: var(--primary-color);
+    color: var(--text-color);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    transform: translateY(-2px);
 }
 
 .page-button.active {
-    background: #4CAF50;
-    color: white;
+    background: var(--accent-color);
+    color: #000; /* Contrast for visibility */
     border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow. */
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
-/* Add a floating element */
-#floating-element {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #4CAF50;
-    border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    animation: rotate 5s linear infinite;
-    z-index: 1000; /* Ensure it's on top. */
-}
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Footer - Echoes of Infinity */
+footer {
+    padding: 20px;
+    text-align: center;
+    color: #888; /* Ghostly whispers */
+    font-size: 0.9em;
+    margin-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Thread of time */
 }
