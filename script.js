@@ -2,26 +2,26 @@ let images = [];
 let currentPage = 1;
 const imagesPerPage = 100;
 
-// Load CSV file
-fetch("images.csv")
-    .then(response => response.text())
-    .then(data => {
-        images = parseCSV(data);
-        showRandomImages();
-    });
+// Load CSV file dynamically
+async function loadCSV() {
+    const response = await fetch("images.csv");
+    const text = await response.text();
+    images = parseCSV(text);
+    showRandomImages(); // Load random images on home page
+}
 
-// Parse CSV data
+// Parse CSV data into an array
 function parseCSV(data) {
-    let rows = data.split("\n").slice(1); // Skip header
+    let rows = data.split("\n").slice(1); // Remove header
     return rows.map(row => {
         let [url, title] = row.split(",");
         return { url: url.trim(), title: title.trim() };
     }).filter(img => img.url && img.title);
 }
 
-// Show random 100 images
+// Show random 100 images on homepage
 function showRandomImages() {
-    let shuffled = images.sort(() => 0.5 - Math.random());
+    let shuffled = [...images].sort(() => 0.5 - Math.random());
     showImages(shuffled.slice(0, imagesPerPage));
 }
 
@@ -46,7 +46,10 @@ function showImages(imageList) {
     paginatedImages.forEach(img => {
         let div = document.createElement("div");
         div.className = "image-card";
-        div.innerHTML = `<img src="${img.url}" alt="${img.title}"><p>${img.title}</p>`;
+        div.innerHTML = `<a href="${img.url}" target="_blank">
+                            <img src="${img.url}" loading="lazy" alt="${img.title}">
+                         </a>
+                         <p>${img.title}</p>`;
         gallery.appendChild(div);
     });
 
@@ -64,3 +67,6 @@ function showImages(imageList) {
         pagination.appendChild(btn);
     }
 }
+
+// Load images on page load
+window.onload = loadCSV;
