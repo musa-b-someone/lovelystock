@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body class="loading">
+<body>
 
     <header>
         <div class="logo" onclick="goToHomePage()">LovelyStock</div>
@@ -25,6 +25,7 @@
     </header>
 
     <main>
+        <div id="loadingIndicator" class="loading-indicator">Loading...</div>
         <div id="imageGallery"></div>
         <div id="pagination"></div>
     </main>
@@ -41,8 +42,6 @@
             <a id="popupDownload" class="download-button" href="" download>Download</a>
         </div>
     </div>
-
-    <div id="loadingIndicator" class="loading-indicator">Loading images...</div>
 
     <script src="script.js"></script>
 </body>
