@@ -1,33 +1,33 @@
 /* styles.css */
 :root {
-  --primary-color: #e91e63;
-  --secondary-color: #f8bbd0;
-  --text-color: #333;
-  --background-color: #fff;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --font-family-header: 'Playfair Display', serif;
-  --font-family-body: 'Lora', serif;
+    --primary-color: #e91e63;
+    --secondary-color: #f8bbd0;
+    --text-color: #333;
+    --background-color: #fff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --font-family-header: 'Playfair Display', serif;
+    --font-family-body: 'Lora', serif;
 }
 
 body {
-  font-family: var(--font-family-body);
-  margin: 0;
-  padding: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  line-height: 1.6;
+    font-family: var(--font-family-body);
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
 }
 
 header {
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-  color: white;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
 }
 
 .logo {
@@ -43,41 +43,43 @@ header {
 }
 
 input[type="text"] {
-  padding: 12px 15px;
-  border: none;
-  border-radius: 25px;
-  margin-right: 10px;
-  font-size: 1em;
-  width: 250px;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  outline: none;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 25px;
+    margin-right: 10px;
+    font-size: 1em;
+    width: 250px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    outline: none;
 }
 
 button {
-  background-color: #fff;
-  color: var(--primary-color);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 1em;
-  box-shadow: 0 2px 5px var(--shadow-color);
-  transition: background-color 0.3s ease;
+    background-color: #fff;
+    color: var(--primary-color);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: var(--secondary-color);
-  color: #fff;
+    background-color: var(--secondary-color);
+    color: #fff;
 }
 
 main {
-  padding: 20px;
+    padding: 20px;
 }
 
+/* Image Gallery Styles */
 #imageGallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-wrap: wrap; /* Allow images to wrap to the next line */
+  justify-content: center; /* Center images horizontally */
+  gap: 15px; /* Space between image-cards */
 }
 
 .image-card {
@@ -87,23 +89,21 @@ main {
   overflow: hidden;
   transition: transform 0.3s ease;
   position: relative;
-    display: flex;           /* Enable flexbox for the image-card */
-    justify-content: center; /* Center horizontally */
-    align-items: center;     /* Center vertically */
-    padding: 5px;          /* Optional padding */
-}
 
-.image-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 10px var(--shadow-color);
+  width: auto; /* Let content define the width */
+  height: auto;  /* Maintain aspect ratio */
 }
 
 .image-card img {
-    max-width: 100%;         /* Ensure image doesn't exceed card width */
-    max-height: 200px;       /* Ensure image doesn't exceed card height */
+    max-width: 300px; /* Set a max width for the images */
+    height: auto;      /* Let the height adjust automatically */
     cursor: pointer;
-    object-fit: contain;    /* Maintain aspect ratio, fit within bounds */
+    display: block;   /* Remove extra space below the image */
+    border-radius: 10px;
+    object-fit: contain;
+
 }
+
 
 /* Styles for the Popup */
 .popup {
@@ -149,13 +149,13 @@ main {
 
 /* Popup Image Style */
 #popupImage {
-    width: auto;  /* Adjust width */
-    max-height: 70vh; /* Occupy up to 70% of popup height */
-    display: block; /* Remove extra space below image */
-    margin: 20px auto; /* Center the image */
+    width: auto;
+    max-height: 70vh;
+    display: block;
+    margin: 20px auto;
     border-radius: 10px;
-    box-shadow: 0 2px 5px var(--shadow-color); /* Optional shadow */
-    object-fit: contain;    /* Maintain aspect ratio, fit within bounds */
+    box-shadow: 0 2px 5px var(--shadow-color);
+    object-fit: contain;
 }
 
 /* Popup Title Style */
@@ -188,8 +188,8 @@ main {
 
 /* Pagination Styles */
 #pagination {
-  text-align: center;
-  margin-top: 30px;
+    text-align: center;
+    margin-top: 30px;
 }
 
 .pagination-info {
@@ -213,32 +213,47 @@ main {
 }
 
 .page-button {
-  background-color: #fff;
-  border: 2px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: 10px 15px;
-  margin: 0 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+    background-color: #fff;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 10px 15px;
+    margin: 0 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .page-button:hover {
-  background-color: var(--primary-color);
-  color: #fff;
+    background-color: var(--primary-color);
+    color: #fff;
 }
 
 .page-button.active {
-  background-color: var(--primary-color);
-  color: #fff;
-  border: none;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
 }
 
+/* New Styles */
+.home-page-message {
+    text-align: center;
+    margin-top: 20px;
+    font-style: italic;
+    color: #777;
+}
+
+.error-message {
+    text-align: center;
+    color: red;
+    margin-top: 20px;
+}
+
+/* Footer Styles */
 footer {
-  text-align: center;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-top: 1px solid #eee;
-  color: #777;
-  font-size: 0.9em;
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+    color: #777;
+    font-size: 0.9em;
 }
