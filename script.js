@@ -2,49 +2,64 @@ let images = [];
 let currentPage = 1;
 const imagesPerPage = 100;
 
-let currentImageList = []; // Holds either search results or random images
+let currentImageList = [];
 
 // Load CSV file and initialize the page
 async function loadCSV() {
-    const response = await fetch("images.csv");
-    const text = await response.text();
-    images = parseCSV(text);
-    showRandomImages(); // Initial display
+    try {
+        const response = await fetch("images.csv");
+        const text = await response.text();
+        images = parseCSV(text);
+        showRandomImages(); // Initial display
+    } catch (error) {
+        console.error("Error loading CSV:", error);
+        // Handle the error appropriately, e.g., display a message to the user
+        displayErrorMessage("Error loading image data. Please try again later.");
+    }
+}
+
+
+function displayErrorMessage(message) {
+    const gallery = document.getElementById("imageGallery");
+    gallery.innerHTML = `<p class="error-message">${message}</p>`;
 }
 
 // Parse CSV data (handles quoted fields and commas within titles)
 function parseCSV(data) {
-    let rows = data.split("\n").map(row => row.trim()).filter(row => row.length > 0);
-    let result = [];
+    let rows = data.split('\n'); // Split by newline character
+    rows = rows.map(row => row.trim()).filter(row => row.length > 0);  // Remove whitespace and empty lines
+    const result = [];
 
-    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header
-        let row = smartSplit(rows[i]);
-        if (row.length >= 2) { // Ensure at least URL and title
-            result.push({ url: row[0].trim(), title: row.slice(1).join(", ").trim() });
+    for (let i = 1; i < rows.length; i++) {
+        let row = smartSplit(rows[i]); // Use smartSplit to handle quoted commas
+        if (row.length >= 2) {
+          result.push({ url: row[0].trim(), title: row.slice(1).join(',').trim() });
         }
     }
     return result;
-}
-
-// Smartly split CSV rows, handling commas within quoted fields.
-function smartSplit(row) {
-    let output = [];
-    let current = "";
+  }
+  
+  // Smartly split CSV rows, handling commas within quoted fields
+  function smartSplit(row) {
+    const items = [];
+    let currentItem = '';
     let inQuotes = false;
-
-    for (let char of row) {
-        if (char === '"' && (current.length === 0 || current[current.length - 1] !== "\\")) {
-            inQuotes = !inQuotes;  // Toggle quote state ONLY if not escaped
-        } else if (char === "," && !inQuotes) {
-            output.push(current);
-            current = "";
-        } else {
-            current += char;
-        }
+    
+    for (let i = 0; i < row.length; i++) {
+      const char = row[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        items.push(currentItem.trim());
+        currentItem = '';
+      } else {
+        currentItem += char;
+      }
     }
-    output.push(current.trim()); // Add the last part
-    return output;
-}
+    items.push(currentItem.trim());  // Push the last item
+    return items;
+  }
+
 
 // Show random love-themed images on the home page
 function showRandomImages() {
@@ -54,6 +69,7 @@ function showRandomImages() {
         return loveKeywords.some(keyword => titleLower.includes(keyword));
     });
 
+    // Supplement with random images if not enough love-themed images
     if (loveImages.length < imagesPerPage) {
         let remaining = imagesPerPage - loveImages.length;
         let otherImages = images.filter(img => !loveImages.includes(img));
@@ -61,17 +77,17 @@ function showRandomImages() {
         loveImages = loveImages.concat(shuffled.slice(0, remaining));
     }
 
-    currentImageList = [...loveImages].sort(() => 0.5 - Math.random()); // Shuffle and update currentImageList
-    currentPage = 1; // Reset to page 1
-    showImages(currentImageList);  // Use currentImageList for initial display
+    currentImageList = [...loveImages].sort(() => 0.5 - Math.random());
+    currentPage = 1;
+    showImages(currentImageList);
 }
 
 // Search images by title (case-insensitive)
 function searchImages() {
     let query = document.getElementById("searchBox").value.toLowerCase();
     let filteredImages = images.filter(img => img.title.toLowerCase().includes(query));
-    currentImageList = filteredImages; // Update currentImageList with search results
-    currentPage = 1; // Reset to page 1 after search
+    currentImageList = filteredImages;
+    currentPage = 1;
     showImages(currentImageList);
 }
 
@@ -82,44 +98,45 @@ function handleSearchKeyPress(event) {
     }
 }
 
+
 // Go to the home page (show random images)
 function goToHomePage() {
-    showRandomImages(); // Call showRandomImages to reset to initial state
+    document.getElementById('searchBox').value = ''; // Clear search box
+    showRandomImages(); // Show random images on home page
 }
 
-// Display the images for the current page
-function showImages(imageList) {
-    let gallery = document.getElementById("imageGallery");
-    let pagination = document.getElementById("pagination");
 
-    let start = (currentPage - 1) * imagesPerPage;
-    let paginatedImages = imageList.slice(start, start + imagesPerPage);
+// Display the images for the current page with error handling
+function showImages(imageList) {
+    const gallery = document.getElementById("imageGallery");
+    const pagination = document.getElementById("pagination");
+
+    const start = (currentPage - 1) * imagesPerPage;
+    const paginatedImages = imageList.slice(start, start + imagesPerPage);
 
     gallery.innerHTML = ""; // Clear previous images
+
+    if (paginatedImages.length === 0) {
+      // Display "No images found" message
+      displayErrorMessage("No images found.");
+      pagination.innerHTML = ""; // Clear pagination
+      return;
+    }
+
     paginatedImages.forEach(img => {
-        let div = document.createElement("div");
+        const div = document.createElement("div");
         div.className = "image-card";
-
-        // Create the img element and set its attributes *before* adding to the DOM
-        let imgElement = document.createElement("img");
-        imgElement.src = img.url;
-        imgElement.loading = "lazy";
-        imgElement.alt = img.title;
-
-        // CORRECTED line: Set onclick handler with proper escaping for title
-        imgElement.onclick = () => openPopup(img.url, img.title.replace(/'/g, "\\'"));
-
-        div.appendChild(imgElement); // Add the image to the card
-        gallery.appendChild(div);    // Add the card to the gallery
+        div.innerHTML = `<img src="${img.url}" loading="lazy" alt="${img.title}" onclick="openPopup('${img.url}', '${img.title.replace(/'/g, "\\'")}')">`; // Escape single quotes in title
+        gallery.appendChild(div);
     });
 
-    updatePagination(imageList); // Update pagination *after* displaying images
+    updatePagination(imageList); // Update pagination after displaying images
 
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+
+
 // Open the image popup
 function openPopup(imageUrl, title) {
     let popup = document.getElementById("imagePopup");
@@ -129,27 +146,27 @@ function openPopup(imageUrl, title) {
 
     popupImage.src = imageUrl;
     popupTitle.innerText = title;
-    popupDownload.href = imageUrl; // Set the download link
+    popupDownload.href = imageUrl;
 
-    popup.style.display = "flex"; // Show the popup
+    popup.style.display = "flex";
 
-    // Close popup if clicking outside the content area
     popup.onclick = function(event) {
         if (event.target === popup) {
             closePopup();
         }
     };
 
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
 }
 
 // Close the image popup
 function closePopup() {
     let popup = document.getElementById("imagePopup");
-    popup.style.display = "none"; // Hide the popup
-    document.body.style.overflow = 'auto'; // Restore background scrolling
-    popup.onclick = null; // Remove the click listener
+    popup.style.display = "none";
+    document.body.style.overflow = 'auto';
+    popup.onclick = null;
 }
+
 
 // Update the pagination display
 function updatePagination(imageList) {
@@ -168,11 +185,12 @@ function updatePagination(imageList) {
     pagination.innerHTML = paginationHTML;
 }
 
+
 // Go to the previous page
 function goToPreviousPage() {
     if (currentPage > 1) {
         currentPage--;
-        showImages(currentImageList); // Use currentImageList for navigation
+        showImages(currentImageList);
     }
 }
 
@@ -180,7 +198,7 @@ function goToPreviousPage() {
 function goToNextPage(totalPages) {
     if (currentPage < totalPages) {
         currentPage++;
-        showImages(currentImageList); // Use currentImageList for navigation
+        showImages(currentImageList);
     }
 }
 
@@ -190,9 +208,9 @@ function handlePageJumpKeyPress(event, totalPages) {
         let pageNumber = parseInt(document.getElementById("pageNumber").value);
         if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
             currentPage = pageNumber;
-            showImages(currentImageList); // Use currentImageList for navigation
+            showImages(currentImageList);
         } else {
-            document.getElementById("pageNumber").value = ""; // Clear invalid entry
+            document.getElementById("pageNumber").value = currentPage;
         }
     }
 }
