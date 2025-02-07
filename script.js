@@ -10,15 +10,14 @@ async function loadCSV() {
         const response = await fetch("images.csv");
         const text = await response.text();
         images = parseCSV(text);
-        showRandomImages(); // Initial display
+        showRandomImages();
     } catch (error) {
         console.error("Error loading CSV:", error);
-        // Handle the error appropriately, e.g., display a message to the user
         displayErrorMessage("Error loading image data. Please try again later.");
     }
 }
 
-
+// Function to display error messages in the image gallery
 function displayErrorMessage(message) {
     const gallery = document.getElementById("imageGallery");
     gallery.innerHTML = `<p class="error-message">${message}</p>`;
@@ -26,39 +25,38 @@ function displayErrorMessage(message) {
 
 // Parse CSV data (handles quoted fields and commas within titles)
 function parseCSV(data) {
-    let rows = data.split('\n'); // Split by newline character
-    rows = rows.map(row => row.trim()).filter(row => row.length > 0);  // Remove whitespace and empty lines
+    let rows = data.split('\n');
+    rows = rows.map(row => row.trim()).filter(row => row.length > 0);
     const result = [];
 
     for (let i = 1; i < rows.length; i++) {
-        let row = smartSplit(rows[i]); // Use smartSplit to handle quoted commas
+        let row = smartSplit(rows[i]);
         if (row.length >= 2) {
-          result.push({ url: row[0].trim(), title: row.slice(1).join(',').trim() });
+            result.push({ url: row[0].trim(), title: row.slice(1).join(',').trim() });
         }
     }
     return result;
-  }
-  
-  // Smartly split CSV rows, handling commas within quoted fields
-  function smartSplit(row) {
+}
+
+// Smartly split CSV rows, handling commas within quoted fields
+function smartSplit(row) {
     const items = [];
     let currentItem = '';
     let inQuotes = false;
-    
-    for (let i = 0; i < row.length; i++) {
-      const char = row[i];
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        items.push(currentItem.trim());
-        currentItem = '';
-      } else {
-        currentItem += char;
-      }
+
+    for (let char of row) {
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            items.push(currentItem.trim());
+            currentItem = '';
+        } else {
+            currentItem += char;
+        }
     }
-    items.push(currentItem.trim());  // Push the last item
+    items.push(currentItem.trim());
     return items;
-  }
+}
 
 
 // Show random love-themed images on the home page
@@ -79,7 +77,19 @@ function showRandomImages() {
 
     currentImageList = [...loveImages].sort(() => 0.5 - Math.random());
     currentPage = 1;
-    showImages(currentImageList);
+
+    // Hide pagination on the home page
+    document.getElementById('pagination').style.display = 'none';
+
+    const imageGallery = document.getElementById('imageGallery');
+    imageGallery.innerHTML = ""; // Clear the gallery before adding images
+    showImages(currentImageList, true);
+
+    // Add home page message
+    const homePageMessage = document.createElement('p');
+    homePageMessage.textContent = '100 random images from our collection to showcase that everything in our collection is unique.';
+    homePageMessage.classList.add('home-page-message');
+    imageGallery.parentNode.insertBefore(homePageMessage, imageGallery.nextSibling);
 }
 
 // Search images by title (case-insensitive)
@@ -88,6 +98,16 @@ function searchImages() {
     let filteredImages = images.filter(img => img.title.toLowerCase().includes(query));
     currentImageList = filteredImages;
     currentPage = 1;
+
+    // Show pagination on search results page
+    document.getElementById('pagination').style.display = 'flex';
+
+    // Remove home page message if it exists
+    const homePageMessage = document.querySelector('.home-page-message');
+    if (homePageMessage) {
+        homePageMessage.remove();
+    }
+
     showImages(currentImageList);
 }
 
@@ -101,40 +121,48 @@ function handleSearchKeyPress(event) {
 
 // Go to the home page (show random images)
 function goToHomePage() {
-    document.getElementById('searchBox').value = ''; // Clear search box
-    showRandomImages(); // Show random images on home page
+    document.getElementById('searchBox').value = '';  // Clear the search box
+    showRandomImages();
 }
 
 
-// Display the images for the current page with error handling
-function showImages(imageList) {
+
+function showImages(imageList, isHomePage = false) {
     const gallery = document.getElementById("imageGallery");
-    const pagination = document.getElementById("pagination");
+    gallery.innerHTML = "";  // Clear previous images
 
-    const start = (currentPage - 1) * imagesPerPage;
-    const paginatedImages = imageList.slice(start, start + imagesPerPage);
-
-    gallery.innerHTML = ""; // Clear previous images
-
-    if (paginatedImages.length === 0) {
-      // Display "No images found" message
-      displayErrorMessage("No images found.");
-      pagination.innerHTML = ""; // Clear pagination
-      return;
+    if (imageList.length === 0) {
+        displayErrorMessage("No images found.");
+        return;
     }
 
-    paginatedImages.forEach(img => {
-        const div = document.createElement("div");
-        div.className = "image-card";
-        div.innerHTML = `<img src="${img.url}" loading="lazy" alt="${img.title}" onclick="openPopup('${img.url}', '${img.title.replace(/'/g, "\\'")}')">`; // Escape single quotes in title
-        gallery.appendChild(div);
-    });
+    imageList.forEach(img => {
+      const div = document.createElement("div");
+      div.className = "image-card";
+  
+      const imgElement = document.createElement('img');
+      imgElement.src = img.url;
+      imgElement.loading = 'lazy';
+      imgElement.alt = img.title;
+  
+      imgElement.onload = function() {
+          const aspectRatio = this.naturalWidth / this.naturalHeight;
+          div.style.flexBasis = `${aspectRatio * 150}px`; // Adjust 150 as needed
+      };
+  
+      imgElement.onclick = () => openPopup(img.url, img.title.replace(/'/g, "\\'"));
+  
+      div.appendChild(imgElement);
+      gallery.appendChild(div);
+  });
 
-    updatePagination(imageList); // Update pagination after displaying images
+
+    if (!isHomePage) { // Only show pagination for search results
+        updatePagination(imageList);
+    }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 
 
 // Open the image popup
@@ -168,10 +196,10 @@ function closePopup() {
 }
 
 
-// Update the pagination display
+
 function updatePagination(imageList) {
-    let pagination = document.getElementById("pagination");
-    let totalPages = Math.ceil(imageList.length / imagesPerPage);
+    const pagination = document.getElementById("pagination");
+    const totalPages = Math.ceil(imageList.length / imagesPerPage);
 
     let paginationHTML = `<div class="pagination-info">
                             ${currentPage} out of ${totalPages}
@@ -184,7 +212,6 @@ function updatePagination(imageList) {
 
     pagination.innerHTML = paginationHTML;
 }
-
 
 // Go to the previous page
 function goToPreviousPage() {
@@ -214,6 +241,7 @@ function handlePageJumpKeyPress(event, totalPages) {
         }
     }
 }
+
 
 // Load images when the page is loaded
 window.onload = loadCSV;
