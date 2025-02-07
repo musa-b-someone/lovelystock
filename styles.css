@@ -1,63 +1,161 @@
+/* BEAUTIFULLY BRUTAL. Prepare to be astonished. */
+
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* A clean, modern base. */
+    text-align: center; /* Centered, but not in a boring way. */
     margin: 0;
     padding: 0;
+    background: radial-gradient(circle, #f0f0f0, #e0e0e0); /* Soft gradient for depth. */
+    color: #333; /* Dark, but not oppressive. */
+    overflow-x: hidden; /* Keep it tidy. */
+    /* Add a subtle, organic texture */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cdefs%3E%3Cpattern id='grid' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23cccccc' opacity='0.1' /%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%' height='100%' fill='url(%23grid)' /%3E%3C/svg%3E");
 }
 
 header {
-    background: #333;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); /* Dramatic overlay. */
     color: white;
-    padding: 20px;
+    padding: 40px 20px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* For a surreal glow. */
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%); /* Angled cut-off for visual intrigue. */
+}
+
+h1 {
+    font-size: 3em;
+    font-weight: 700; /* Bold and confident. */
+    letter-spacing: 0.1em; /* A touch of extravagance. */
+    text-transform: uppercase;
+    animation: pulse 3s infinite alternate; /* Gentle, mesmerizing animation. */
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.05); /* Subtle growth for visual interest. */
+    }
 }
 
 input {
-    padding: 10px;
-    width: 300px;
+    padding: 15px;
+    width: 60%;
+    border: none; /* Ditch the conventional border. */
+    background: rgba(255, 255, 255, 0.7); /* Translucent input field. */
+    color: #333;
+    font-size: 1.2em;
+    border-radius: 10px; /* Soften the edges slightly. */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle depth. */
+    transition: all 0.3s ease; /* Smooth transition for hover effect. */
+    outline: none; /* Remove the default outline. */
+}
+
+input:focus {
+    background: rgba(255, 255, 255, 0.9); /* Slightly brighter on focus. */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced depth. */
 }
 
 button {
-    padding: 10px;
-    background: #007BFF;
+    padding: 15px 30px;
+    background: #4CAF50; /* A vibrant green. */
     color: white;
     border: none;
     cursor: pointer;
+    font-size: 1.2em;
+    border-radius: 50px; /* Fully rounded button for a modern look. */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    text-transform: uppercase; /* Make it bold */
+    letter-spacing: 0.05em; /* A slight spread */
+}
+
+button:hover {
+    background: #388E3C; /* Darker green on hover. */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px); /* Lift the button slightly on hover. */
 }
 
 #imageGallery {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid. */
+    gap: 20px;
     padding: 20px;
+    justify-content: center;
 }
 
 .image-card {
-    width: 200px;
-    margin: 10px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Hide overflow for clean look. */
+    transition: transform 0.3s ease;
+}
+
+.image-card:hover {
+    transform: scale(1.05); /* Subtle zoom effect. */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .image-card img {
     width: 100%;
-    height: auto;
+    height: 200px; /* Fixed height for consistency. */
+    object-fit: cover; /* Maintain aspect ratio. */
+    transition: filter 0.3s ease; /* Smooth filter transition. */
+}
+
+.image-card img:hover {
+    filter: grayscale(80%); /* Fading to grayscale on hover. */
 }
 
 #pagination {
     margin: 20px;
+    text-align: center;
 }
 
 .page-button {
-    padding: 10px;
+    padding: 10px 20px;
     margin: 5px;
     cursor: pointer;
-    border: 1px solid #007BFF;
-    color: #007BFF;
-    background: white;
+    border: 2px solid #4CAF50; /* Match the button color. */
+    color: #4CAF50;
+    background: transparent; /* Transparent background. */
+    border-radius: 50px; /* Fully rounded. */
+    transition: all 0.3s ease;
+    font-weight: 600; /* boldness */
+}
+
+.page-button:hover {
+    background: #4CAF50; /* Green on hover. */
+    color: white;
 }
 
 .page-button.active {
-    background: #007BFF;
+    background: #4CAF50;
     color: white;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow. */
+}
+
+/* Add a floating element */
+#floating-element {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: rotate 5s linear infinite;
+    z-index: 1000; /* Ensure it's on top. */
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
