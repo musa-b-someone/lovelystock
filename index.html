@@ -12,9 +12,9 @@
 <body>
 
     <header>
-        <div class="logo">LovelyStock</div>
+        <div class="logo" onclick="goToHomePage()">LovelyStock</div>
         <div class="search-bar">
-            <input type="text" id="searchBox" placeholder="Search for love, romance, and more...">
+            <input type="text" id="searchBox" placeholder="Search for love, romance, and more..." onkeypress="handleSearchKeyPress(event)">
             <button onclick="searchImages()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
                     <circle cx="11" cy="11" r="8"></circle>
@@ -25,21 +25,6 @@
     </header>
 
     <main>
-        <section class="featured-images">
-          <h2>Featured Collections</h2>
-          <div class="collection-grid">
-            <div class="collection-item" style="background-image: url('placeholder1.jpg')">
-              <div class="collection-overlay">Valentine's Day</div>
-            </div>
-            <div class="collection-item" style="background-image: url('placeholder2.jpg')">
-              <div class="collection-overlay">Romantic Getaways</div>
-            </div>
-            <div class="collection-item" style="background-image: url('placeholder3.jpg')">
-              <div class="collection-overlay">Wedding Bells</div>
-            </div>
-          </div>
-        </section>
-
         <div id="imageGallery"></div>
         <div id="pagination"></div>
     </main>
@@ -51,7 +36,6 @@
     <!-- Image Popup -->
     <div id="imagePopup" class="popup">
         <div class="popup-content">
-            <span class="close-button" onclick="closePopup()">×</span>
             <img id="popupImage" src="" alt="Popup Image">
             <p id="popupTitle"></p>
             <a id="popupDownload" class="download-button" href="" download>Download</a>
