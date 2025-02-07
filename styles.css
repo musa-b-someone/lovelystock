@@ -18,6 +18,11 @@ body {
     line-height: 1.6;
 }
 
+/* Add a loading state to hide content initially */
+body.loading * {
+  display: none !important;
+}
+
 header {
     background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     color: white;
@@ -76,32 +81,30 @@ main {
 
 /* Image Gallery Styles */
 #imageGallery {
-  display: flex;
-  flex-wrap: wrap; /* Allow images to wrap to the next line */
-  justify-content: center; /* Center images horizontally */
-  gap: 15px; /* Space between image-cards */
+    display: flex;           /* Use flexbox */
+    flex-wrap: wrap;        /* Wrap images to the next line */
+    justify-content: flex-start;   /* Align items to the start of the line */
+    align-items: stretch;  /* Stretch items to fill height */
+    gap: 10px;
 }
 
 .image-card {
-  background-color: #fff;
-  border-radius: 10px;
+  position: relative;    /* For absolute positioning of the image */
+  width: auto; /* Initial width */
+  height: auto; /* Initial height */
   box-shadow: 0 2px 5px var(--shadow-color);
+  border-radius: 10px;
   overflow: hidden;
-  transition: transform 0.3s ease;
-  position: relative;
-
-  width: auto; /* Let content define the width */
-  height: auto;  /* Maintain aspect ratio */
+  margin: 10px; /* Add margin to create spacing */
 }
 
 .image-card img {
-    max-width: 300px; /* Set a max width for the images */
-    height: auto;      /* Let the height adjust automatically */
-    cursor: pointer;
-    display: block;   /* Remove extra space below the image */
+    display: block; /* Remove extra space below the image */
+    width: 100%;   /* Make image fill container's width */
+    height: auto;   /* Maintain aspect ratio */
     border-radius: 10px;
     object-fit: contain;
-
+    cursor: pointer;
 }
 
 
@@ -190,6 +193,7 @@ main {
 #pagination {
     text-align: center;
     margin-top: 30px;
+    display: none;  /* Initially hidden; show only on search */
 }
 
 .pagination-info {
@@ -234,7 +238,7 @@ main {
     border: none;
 }
 
-/* New Styles */
+/* Home Page Message Styles */
 .home-page-message {
     text-align: center;
     margin-top: 20px;
@@ -242,6 +246,7 @@ main {
     color: #777;
 }
 
+/* Display Error Message Styles */
 .error-message {
     text-align: center;
     color: red;
@@ -256,4 +261,17 @@ footer {
     border-top: 1px solid #eee;
     color: #777;
     font-size: 0.9em;
+}
+
+/* Loading State Styles */
+.loading-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 10px;
+  z-index: 1000;
 }
