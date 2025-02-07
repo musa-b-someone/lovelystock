@@ -1,6 +1,8 @@
 let images = [];
 let currentPage = 1;
-const imagesPerPage = 50;
+const imagesPerPage = 100; // 100 images at max
+
+let currentImageList = []; // Store the current image list (search results or all images)
 
 // Load CSV file dynamically
 async function loadCSV() {
@@ -60,16 +62,30 @@ function showRandomImages() {
         loveImages = loveImages.concat(shuffled.slice(0, remaining));
     }
 
-    let shuffledLoveImages = [...loveImages].sort(() => 0.5 - Math.random());
-    showImages(shuffledLoveImages.slice(0, imagesPerPage));
+    currentImageList = [...loveImages].sort(() => 0.5 - Math.random()); // Update current image list
+    currentPage = 1;
+    showImages(currentImageList.slice(0, imagesPerPage));
 }
 
 // Search images by title (case insensitive)
 function searchImages() {
     let query = document.getElementById("searchBox").value.toLowerCase();
     let filteredImages = images.filter(img => img.title.toLowerCase().includes(query));
+    currentImageList = filteredImages; // Update current image list
     currentPage = 1;
-    showImages(filteredImages);
+    showImages(currentImageList);
+}
+
+// Handle enter key press in search box
+function handleSearchKeyPress(event) {
+    if (event.key === "Enter") {
+        searchImages();
+    }
+}
+
+// Go to home page
+function goToHomePage() {
+    showRandomImages();
 }
 
 // Show images with pagination
@@ -89,18 +105,7 @@ function showImages(imageList) {
     });
 
     // Pagination
-    pagination.innerHTML = "";
-    let totalPages = Math.ceil(imageList.length / imagesPerPage);
-    for (let i = 1; i <= totalPages; i++) {
-        let btn = document.createElement("button");
-        btn.className = "page-button " + (i === currentPage ? "active" : "");
-        btn.innerText = i;
-        btn.onclick = () => {
-            currentPage = i;
-            showImages(imageList);
-        };
-        pagination.appendChild(btn);
-    }
+    updatePagination(imageList);
 
     window.scrollTo({
         top: 0,
@@ -120,6 +125,14 @@ function openPopup(imageUrl, title) {
     popupDownload.href = imageUrl; // Set the download link
 
     popup.style.display = "flex"; // Show the popup
+
+    // Listen for clicks outside the popup content to close it
+    popup.addEventListener('click', function(event) {
+        if (event.target === popup) {
+            closePopup();
+        }
+    });
+
     document.body.style.overflow = 'hidden'; // Disable scrolling on the body
 }
 
@@ -128,6 +141,57 @@ function closePopup() {
     let popup = document.getElementById("imagePopup");
     popup.style.display = "none"; // Hide the popup
     document.body.style.overflow = 'auto'; // Re-enable scrolling on the body
+    popup.removeEventListener('click', function(event) {
+        if (event.target === popup) {
+            closePopup();
+        }
+    });
+}
+
+// Update pagination display
+function updatePagination(imageList) {
+    let pagination = document.getElementById("pagination");
+    let totalPages = Math.ceil(imageList.length / imagesPerPage);
+
+    let paginationHTML = `<div class="pagination-info">
+                            ${currentPage} out of ${totalPages}
+                            <button class="page-button" onclick="goToPreviousPage()" ${currentPage === 1 ? 'disabled' : ''}>< Back</button>
+                            <button class="page-button" onclick="goToNextPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Forward ></button>
+                         </div>
+                         <div class="page-jump">
+                            Go to | <input type="number" id="pageNumber" min="1" max="${totalPages}" placeholder="${currentPage}" onkeypress="handlePageJumpKeyPress(event, ${totalPages})"> | page
+                         </div>`;
+
+    pagination.innerHTML = paginationHTML;
+}
+
+// Go to previous page
+function goToPreviousPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        showImages(currentImageList);
+    }
+}
+
+// Go to next page
+function goToNextPage(totalPages) {
+    if (currentPage < totalPages) {
+        currentPage++;
+        showImages(currentImageList);
+    }
+}
+
+// Handle enter key press in page jump input
+function handlePageJumpKeyPress(event, totalPages) {
+    if (event.key === "Enter") {
+        let pageNumber = parseInt(document.getElementById("pageNumber").value);
+        if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
+            currentPage = pageNumber;
+            showImages(currentImageList);
+        } else {
+            alert("Invalid page number. Please enter a number between 1 and " + totalPages);
+        }
+    }
 }
 
 // Load images on page load
