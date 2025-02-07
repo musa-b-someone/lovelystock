@@ -202,6 +202,8 @@ function goToNextPage(totalPages) {
     }
 }
 
+
+
 // Handle Enter key press in the page jump input
 function handlePageJumpKeyPress(event, totalPages) {
     if (event.key === "Enter") {
