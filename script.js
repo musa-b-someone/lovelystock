@@ -3,6 +3,7 @@ let currentPage = 1;
 const imagesPerPage = 100;
 
 let currentImageList = [];
+let baseCardWidth = 250;  // Base width for calculations (adjust as needed)
 
 // Load CSV file and initialize the page
 async function loadCSV() {
@@ -14,13 +15,24 @@ async function loadCSV() {
     } catch (error) {
         console.error("Error loading CSV:", error);
         displayErrorMessage("Error loading image data. Please try again later.");
+        document.body.classList.remove('loading'); // End loading state on error
     }
 }
 
-// Function to display error messages in the image gallery
+// Display a loading Indicator
+function showLoadingIndicator() {
+  document.getElementById('loadingIndicator').style.display = 'block';
+}
+
+// Hide the loading Indicator
+function hideLoadingIndicator() {
+  document.getElementById('loadingIndicator').style.display = 'none';
+}
+
 function displayErrorMessage(message) {
     const gallery = document.getElementById("imageGallery");
     gallery.innerHTML = `<p class="error-message">${message}</p>`;
+    hideLoadingIndicator();
 }
 
 // Parse CSV data (handles quoted fields and commas within titles)
@@ -60,7 +72,7 @@ function smartSplit(row) {
 
 
 // Show random love-themed images on the home page
-function showRandomImages() {
+async function showRandomImages() {
     const loveKeywords = ['love', 'romance', 'valentines', 'heart', 'couple', 'kiss', 'wedding', 'flowers', 'affection', 'passion', 'date', 'relationship'];
     let loveImages = images.filter(img => {
         const titleLower = img.title.toLowerCase();
@@ -83,17 +95,17 @@ function showRandomImages() {
 
     const imageGallery = document.getElementById('imageGallery');
     imageGallery.innerHTML = ""; // Clear the gallery before adding images
-    showImages(currentImageList, true);
 
-    // Add home page message
-    const homePageMessage = document.createElement('p');
-    homePageMessage.textContent = '100 random images from our collection to showcase that everything in our collection is unique.';
-    homePageMessage.classList.add('home-page-message');
-    imageGallery.parentNode.insertBefore(homePageMessage, imageGallery.nextSibling);
+    // Show the loading Indicator
+    showLoadingIndicator();
+    await showImages(currentImageList, true);
+
+
+    hideLoadingIndicator(); // Hide after images are loaded
 }
 
 // Search images by title (case-insensitive)
-function searchImages() {
+async function searchImages() {
     let query = document.getElementById("searchBox").value.toLowerCase();
     let filteredImages = images.filter(img => img.title.toLowerCase().includes(query));
     currentImageList = filteredImages;
@@ -108,7 +120,11 @@ function searchImages() {
         homePageMessage.remove();
     }
 
-    showImages(currentImageList);
+    // Show the loading Indicator
+    showLoadingIndicator();
+    await showImages(currentImageList);
+
+    hideLoadingIndicator(); // Hide after images are loaded
 }
 
 // Handle Enter key press in the search box
@@ -126,43 +142,61 @@ function goToHomePage() {
 }
 
 
-
-function showImages(imageList, isHomePage = false) {
+// Display images with optional home page message
+async function showImages(imageList, isHomePage = false) {
+  return new Promise((resolve) => {
     const gallery = document.getElementById("imageGallery");
-    gallery.innerHTML = "";  // Clear previous images
+    gallery.innerHTML = "";
+    let loadedCount = 0;
+    const totalImages = imageList.length;
+
 
     if (imageList.length === 0) {
         displayErrorMessage("No images found.");
         return;
     }
 
-    imageList.forEach(img => {
-      const div = document.createElement("div");
-      div.className = "image-card";
-  
-      const imgElement = document.createElement('img');
-      imgElement.src = img.url;
-      imgElement.loading = 'lazy';
-      imgElement.alt = img.title;
-  
-      imgElement.onload = function() {
-          const aspectRatio = this.naturalWidth / this.naturalHeight;
-          div.style.flexBasis = `${aspectRatio * 150}px`; // Adjust 150 as needed
-      };
-  
-      imgElement.onclick = () => openPopup(img.url, img.title.replace(/'/g, "\\'"));
-  
-      div.appendChild(imgElement);
-      gallery.appendChild(div);
-  });
+    const imageLoadPromises = imageList.map(img => {
+        return new Promise((resolveImage) => {
+            const div = document.createElement("div");
+            div.className = "image-card";
+
+            const imgElement = document.createElement('img');
+            imgElement.src = img.url;
+            imgElement.loading = 'lazy';
+            imgElement.alt = img.title;
+
+            imgElement.onload = function() {
+                const aspectRatio = this.naturalWidth / this.naturalHeight;
+                this.style.width = '100%';
+                div.style.flexBasis = `${baseCardWidth * aspectRatio}px`;
+                imgElement.onclick = () => openPopup(img.url, img.title.replace(/'/g, "\\'"));
+
+                div.appendChild(imgElement);
+                gallery.appendChild(div);
+                resolveImage(); // Resolve the promise for this image
+            };
+
+            imgElement.onerror = function() {
+                console.warn("Error loading image:", img.url);
+                resolveImage(); // Resolve the promise even if there's an error
+            };
+        });
+    });
 
 
-    if (!isHomePage) { // Only show pagination for search results
-        updatePagination(imageList);
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+        Promise.all(imageLoadPromises).then(() => {
+            if (!isHomePage) {
+                updatePagination(imageList);
+                document.getElementById('pagination').style.display = 'flex';
+            }
+            document.body.classList.remove('loading');  // Remove the loading class from the body
+            resolve();
+        });
+    });
 }
+
+
 
 
 // Open the image popup
