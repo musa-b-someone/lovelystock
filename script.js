@@ -1,10 +1,9 @@
 let images = [];
 let currentPage = 1;
-const imagesPerPage = 100; // 100 images at max
+const imagesPerPage = 100;
 
-let currentImageList = []; // Store the current image list (search results or all images)
+let currentImageList = [];
 
-// Load CSV file dynamically
 async function loadCSV() {
     const response = await fetch("images.csv");
     const text = await response.text();
@@ -12,7 +11,6 @@ async function loadCSV() {
     showRandomImages();
 }
 
-// Parse CSV data into an array (handles ANY format)
 function parseCSV(data) {
     let rows = data.split("\n").map(row => row.trim()).filter(row => row.length > 0);
     let result = [];
@@ -27,7 +25,6 @@ function parseCSV(data) {
     return result;
 }
 
-// Smartly split CSV rows, handling commas inside descriptions
 function smartSplit(row) {
     let output = [];
     let current = "";
@@ -47,7 +44,6 @@ function smartSplit(row) {
     return output;
 }
 
-// Show random images with a love theme
 function showRandomImages() {
     const loveKeywords = ['love', 'romance', 'valentines', 'heart', 'couple', 'kiss', 'wedding', 'flowers', 'affection', 'passion', 'date', 'relationship'];
     let loveImages = images.filter(img => {
@@ -62,33 +58,29 @@ function showRandomImages() {
         loveImages = loveImages.concat(shuffled.slice(0, remaining));
     }
 
-    currentImageList = [...loveImages].sort(() => 0.5 - Math.random()); // Update current image list
-    currentPage = 1;
-    showImages(currentImageList.slice(0, imagesPerPage));
-}
-
-// Search images by title (case insensitive)
-function searchImages() {
-    let query = document.getElementById("searchBox").value.toLowerCase();
-    let filteredImages = images.filter(img => img.title.toLowerCase().includes(query));
-    currentImageList = filteredImages; // Update current image list
+    currentImageList = [...loveImages].sort(() => 0.5 - Math.random());
     currentPage = 1;
     showImages(currentImageList);
 }
 
-// Handle enter key press in search box
+function searchImages() {
+    let query = document.getElementById("searchBox").value.toLowerCase();
+    let filteredImages = images.filter(img => img.title.toLowerCase().includes(query));
+    currentImageList = filteredImages;
+    currentPage = 1;
+    showImages(currentImageList);
+}
+
 function handleSearchKeyPress(event) {
     if (event.key === "Enter") {
         searchImages();
     }
 }
 
-// Go to home page
 function goToHomePage() {
     showRandomImages();
 }
 
-// Show images with pagination
 function showImages(imageList) {
     let gallery = document.getElementById("imageGallery");
     let pagination = document.getElementById("pagination");
@@ -100,11 +92,11 @@ function showImages(imageList) {
     paginatedImages.forEach(img => {
         let div = document.createElement("div");
         div.className = "image-card";
+        // Make image a block-level element to control its dimensions
         div.innerHTML = `<img src="${img.url}" loading="lazy" alt="${img.title}" onclick="openPopup('${img.url}', '${img.title}')">`;
         gallery.appendChild(div);
     });
 
-    // Pagination
     updatePagination(imageList);
 
     window.scrollTo({
@@ -113,7 +105,6 @@ function showImages(imageList) {
     });
 }
 
-// Open the image popup
 function openPopup(imageUrl, title) {
     let popup = document.getElementById("imagePopup");
     let popupImage = document.getElementById("popupImage");
@@ -122,25 +113,23 @@ function openPopup(imageUrl, title) {
 
     popupImage.src = imageUrl;
     popupTitle.innerText = title;
-    popupDownload.href = imageUrl; // Set the download link
+    popupDownload.href = imageUrl;
 
-    popup.style.display = "flex"; // Show the popup
+    popup.style.display = "flex";
 
-    // Listen for clicks outside the popup content to close it
     popup.addEventListener('click', function(event) {
         if (event.target === popup) {
             closePopup();
         }
     });
 
-    document.body.style.overflow = 'hidden'; // Disable scrolling on the body
+    document.body.style.overflow = 'hidden';
 }
 
-// Close the image popup
 function closePopup() {
     let popup = document.getElementById("imagePopup");
-    popup.style.display = "none"; // Hide the popup
-    document.body.style.overflow = 'auto'; // Re-enable scrolling on the body
+    popup.style.display = "none";
+    document.body.style.overflow = 'auto';
     popup.removeEventListener('click', function(event) {
         if (event.target === popup) {
             closePopup();
@@ -148,7 +137,6 @@ function closePopup() {
     });
 }
 
-// Update pagination display
 function updatePagination(imageList) {
     let pagination = document.getElementById("pagination");
     let totalPages = Math.ceil(imageList.length / imagesPerPage);
@@ -165,7 +153,6 @@ function updatePagination(imageList) {
     pagination.innerHTML = paginationHTML;
 }
 
-// Go to previous page
 function goToPreviousPage() {
     if (currentPage > 1) {
         currentPage--;
@@ -173,7 +160,6 @@ function goToPreviousPage() {
     }
 }
 
-// Go to next page
 function goToNextPage(totalPages) {
     if (currentPage < totalPages) {
         currentPage++;
@@ -181,7 +167,6 @@ function goToNextPage(totalPages) {
     }
 }
 
-// Handle enter key press in page jump input
 function handlePageJumpKeyPress(event, totalPages) {
     if (event.key === "Enter") {
         let pageNumber = parseInt(document.getElementById("pageNumber").value);
@@ -194,5 +179,4 @@ function handlePageJumpKeyPress(event, totalPages) {
     }
 }
 
-// Load images on page load
 window.onload = loadCSV;
