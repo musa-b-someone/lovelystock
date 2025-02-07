@@ -74,7 +74,6 @@ main {
   padding: 20px;
 }
 
-/* Image Gallery Styles */
 #imageGallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -88,6 +87,10 @@ main {
   overflow: hidden;
   transition: transform 0.3s ease;
   position: relative;
+    display: flex;           /* Enable flexbox for the image-card */
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
+    padding: 5px;          /* Optional padding */
 }
 
 .image-card:hover {
@@ -96,23 +99,23 @@ main {
 }
 
 .image-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  cursor: pointer; /* Add cursor pointer to indicate clickability */
+    max-width: 100%;         /* Ensure image doesn't exceed card width */
+    max-height: 200px;       /* Ensure image doesn't exceed card height */
+    cursor: pointer;
+    object-fit: contain;    /* Maintain aspect ratio, fit within bounds */
 }
 
 /* Styles for the Popup */
 .popup {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
     justify-content: center;
     align-items: center;
 }
@@ -123,14 +126,14 @@ main {
     margin: auto;
     padding: 0;
     border: 1px solid #888;
-    width: 80%; /* Occupy 80% of the screen */
-    border-radius: 20px; /* Curved borders */
+    width: 80%;
+    border-radius: 20px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s;
-    text-align: center; /* Center the content */
+    text-align: center;
 }
 
 /* Add Animation */
@@ -152,7 +155,7 @@ main {
     margin: 20px auto; /* Center the image */
     border-radius: 10px;
     box-shadow: 0 2px 5px var(--shadow-color); /* Optional shadow */
-    object-fit: contain; /* Prevents image distortion */
+    object-fit: contain;    /* Maintain aspect ratio, fit within bounds */
 }
 
 /* Popup Title Style */
