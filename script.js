@@ -99,9 +99,18 @@ function showImages(imageList) {
     paginatedImages.forEach(img => {
         let div = document.createElement("div");
         div.className = "image-card";
-        // Simplified image display, relying on CSS for centering and aspect ratio
-        div.innerHTML = `<img src="${img.url}" loading="lazy" alt="${img.title}" onclick="openPopup('${img.url}', '${img.title}')">`;
-        gallery.appendChild(div);
+
+        // Create the img element and set its attributes *before* adding to the DOM
+        let imgElement = document.createElement("img");
+        imgElement.src = img.url;
+        imgElement.loading = "lazy";
+        imgElement.alt = img.title;
+
+        // CORRECTED line: Set onclick handler with proper escaping for title
+        imgElement.onclick = () => openPopup(img.url, img.title.replace(/'/g, "\\'"));
+
+        div.appendChild(imgElement); // Add the image to the card
+        gallery.appendChild(div);    // Add the card to the gallery
     });
 
     updatePagination(imageList); // Update pagination *after* displaying images
@@ -111,7 +120,6 @@ function showImages(imageList) {
         behavior: 'smooth'
     });
 }
-
 // Open the image popup
 function openPopup(imageUrl, title) {
     let popup = document.getElementById("imagePopup");
