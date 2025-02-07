@@ -279,3 +279,5 @@ function handlePageJumpKeyPress(event, totalPages) {
 
 // Load images when the page is loaded
 window.onload = loadCSV;
+
+
