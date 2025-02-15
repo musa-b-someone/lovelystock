@@ -10,8 +10,8 @@ async function loadCSV() {
     let combinedCSV = "";
     let firstPart = true;
     
-    // Loop through parts 1 to 3
-    for (let part = 1; part <= 3; part++) {
+    // Loop through parts 1 to 4
+    for (let part = 1; part <= 4; part++) {
       const response = await fetch(`images_${part}.csv`);
       
       if (!response.ok) {
