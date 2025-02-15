@@ -4,19 +4,45 @@ const imagesPerPage = 100;
 
 let currentImageList = [];
 
-// Load CSV file and initialize the page
+// Load exactly 3 CSV parts and initialize the page
 async function loadCSV() {
-    try {
-        const response = await fetch("images.csv");
-        const text = await response.text();
-        images = parseCSV(text);
-        showRandomImages(); // Initial display
-    } catch (error) {
-        console.error("Error loading CSV:", error);
-        // Handle the error appropriately, e.g., display a message to the user
-        displayErrorMessage("Error loading image data. Please try again later.");
+  try {
+    let combinedCSV = "";
+    let firstPart = true;
+    
+    // Loop through parts 1 to 3
+    for (let part = 1; part <= 3; part++) {
+      const response = await fetch(`images_${part}.csv`);
+      
+      if (!response.ok) {
+        throw new Error(`images_${part}.csv not found.`);
+      }
+      
+      const text = await response.text();
+      
+      if (firstPart) {
+        // Use the entire first file including its header
+        combinedCSV += text;
+        firstPart = false;
+      } else {
+        // Remove the header (first line) for subsequent files
+        const lines = text.split("\n");
+        if (lines.length > 1) {
+          // Append data lines after the header
+          combinedCSV += "\n" + lines.slice(1).join("\n");
+        }
+      }
     }
+    
+    // Parse the combined CSV data
+    images = parseCSV(combinedCSV);
+    showRandomImages(); // Initial display
+  } catch (error) {
+    console.error("Error loading CSV:", error);
+    displayErrorMessage("Error loading image data. Please try again later.");
+  }
 }
+
 
 
 function displayErrorMessage(message) {
